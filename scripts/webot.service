@@ -1,0 +1,34 @@
+[Unit]
+Description=Webot Discord Meeting Scheduler
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=webot
+Group=webot
+WorkingDirectory=/opt/webot
+ExecStart=/usr/bin/node index.js
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/webot/.env
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/webot/data /opt/webot/logs
+
+# Resource limits
+LimitNOFILE=65536
+MemoryLimit=1G
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=webot
+
+[Install]
+WantedBy=multi-user.target

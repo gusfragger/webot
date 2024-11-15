@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  webot:
+    build: .
+    container_name: webot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=/app/data/webot.db
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    ports:
+      - "3000:3000"
+    networks:
+      - webot-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "process.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: webot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - webot
+    networks:
+      - webot-network
+    profiles:
+      - proxy
+
+networks:
+  webot-network:
+    driver: bridge
+
+volumes:
+  webot-data:
+    driver: local
