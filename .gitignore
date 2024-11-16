@@ -32,6 +32,7 @@ coverage/
 *.lcov
 .claude
 .CLAUDE.md
+CLAUDE.md
 
 # nyc test coverage
 .nyc_output
